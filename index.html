@@ -109,8 +109,8 @@
 
   <!-- Papan RAW -->
   <div class="board" id="raw-board">
-    <h2 id="mainTitle">Raw GitHub Link</h2>
-    <input type="text" id="githubLink" placeholder="username/repo/filename.js atau link lengkap">
+    <h2 id="mainTitle">Masukkan Link GitHub</h2>
+    <input type="text" id="githubLink" placeholder="Contoh: username/repo/main/script.js atau link GitHub lengkap">
     <button onclick="generateRaw()">Raw</button>
   </div>
 
@@ -136,7 +136,10 @@
   <script>
     const githubInput = document.getElementById('githubLink');
     githubInput.addEventListener('input', () => {
-      githubInput.value = githubInput.value.replace(/^https:\/\/github\.com\//, '');
+      // Bersihkan bagian domain GitHub dan hapus /blob/
+      githubInput.value = githubInput.value
+        .replace(/^https:\/\/github\.com\//, '')
+        .replace('/blob/', '/');
     });
 
     function playSound() {
@@ -160,16 +163,10 @@
       let input = githubInput.value.trim();
       if (!input) return showAlert('Link tidak boleh kosong');
 
-      // Hapus domain jika ada
-      input = input.replace(/^https:\/\/github\.com\//, '');
+      // Bersihkan jika masih ada /blob/
+      input = input.replace(/^https:\/\/github\.com\//, '').replace('/blob/', '/');
 
-      // Hapus '/blob/' jika ada
-      input = input.replace('/blob/', '/');
-
-      // Tambahkan /main setelah username/repo
-      const rawLink = 'https://raw.githubusercontent.com/' +
-        input.replace(/^([^\/]+\/[^\/]+)/, '$1/main');
-
+      const rawLink = 'https://raw.githubusercontent.com/' + input;
       document.getElementById('resultBox').innerText = rawLink;
       showAlert('Berhasil melakukan Raw');
     }
