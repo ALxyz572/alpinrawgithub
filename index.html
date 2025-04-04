@@ -100,34 +100,49 @@
       width: 18px;
       height: 18px;
     }
+
+    #pasteBtn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 12px 18px;
+      border-radius: 20px;
+      background: #00bcd4;
+      color: white;
+      border: none;
+      display: none;
+      font-size: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 999;
+    }
+
+    #pasteBtn:hover {
+      background: #0097a7;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Efek Mengetik -->
   <div class="typewriter" id="typewriterText"></div>
 
-  <!-- Papan RAW -->
   <div class="board" id="raw-board">
     <h2 id="mainTitle">Raw GitHub Link</h2>
-    <input type="text" id="githubLink" placeholder="Masukkan link GitHub">
+    <input type="text" id="githubLink" placeholder="Masukan Link Github">
     <button onclick="generateRaw()">Raw</button>
   </div>
 
-  <!-- Papan COPY -->
   <div class="board" id="copy-board">
     <h2>Copy Raw Link</h2>
     <div class="raw-result" id="resultBox">Link Raw akan muncul di sini...</div>
     <button onclick="copyRaw()">Copy</button>
   </div>
 
-  <!-- Suara -->
   <audio id="bubbleSound" src="https://www.myinstants.com/media/sounds/bubble-pop.mp3"></audio>
 
-  <!-- Alert Box -->
   <div id="alertBox" class="alert" style="display: none;"></div>
 
-  <!-- Footer -->
+  <button id="pasteBtn" onclick="pasteClipboard()">Tempel</button>
+
   <footer>
     <span>Alpin Developer</span>
     <img src="https://upload.wikimedia.org/wikipedia/commons/e/e4/Twitter_Verified_Badge.svg" alt="Verified" class="verified-icon">
@@ -160,12 +175,11 @@
       let input = githubInput.value.trim();
       if (!input) return showAlert('Link tidak boleh kosong');
 
-      // Bersihkan link: hapus domain awal & ganti /blob/ jadi /
-      input = input.replace(/^https:\/\/github\.com\//, '').replace('/blob/', '/');
-
+      // Bersihkan /blob/ & https://github.com/ HANYA untuk output
+      input = input.replace('https://github.com/', '').replace('/blob/', '/');
       const rawLink = 'https://raw.githubusercontent.com/' + input;
       document.getElementById('resultBox').innerText = rawLink;
-      showAlert('Berhasil membuat Raw Link');
+      showAlert('Berhasil melakukan Raw');
     }
 
     function copyRaw() {
@@ -173,9 +187,30 @@
       const text = document.getElementById('resultBox').innerText;
       navigator.clipboard.writeText(text)
         .then(() => {
-          showAlert('Link Raw disalin');
+          showAlert('Berhasil salin link Raw');
+          document.getElementById('pasteBtn').style.display = 'block';
         });
     }
+
+    async function pasteClipboard() {
+      try {
+        const text = await navigator.clipboard.readText();
+        githubInput.value = text.replace('https://github.com/', '');
+        generateRaw();
+      } catch (err) {
+        showAlert('Gagal menempel clipboard');
+      }
+    }
+
+    window.onload = () => {
+      typeEffect();
+      // Tampilkan tombol tempel jika clipboard punya link
+      navigator.clipboard.readText().then(text => {
+        if (text.includes("github.com")) {
+          document.getElementById('pasteBtn').style.display = 'block';
+        }
+      }).catch(() => {});
+    };
 
     // Efek Mengetik
     const typingTexts = [
@@ -210,8 +245,6 @@
         mainTitle.innerText = typingTexts[2];
       }
     }
-
-    window.onload = typeEffect;
   </script>
 </body>
 </html>
