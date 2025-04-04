@@ -109,8 +109,8 @@
 
   <!-- Papan RAW -->
   <div class="board" id="raw-board">
-    <h2 id="mainTitle">Masukkan Link GitHub</h2>
-    <input type="text" id="githubLink" placeholder="Contoh: username/repo/main/script.js atau link GitHub lengkap">
+    <h2 id="mainTitle">Raw GitHub Link</h2>
+    <input type="text" id="githubLink" placeholder="Masukkan link GitHub">
     <button onclick="generateRaw()">Raw</button>
   </div>
 
@@ -136,10 +136,7 @@
   <script>
     const githubInput = document.getElementById('githubLink');
     githubInput.addEventListener('input', () => {
-      // Bersihkan bagian domain GitHub dan hapus /blob/
-      githubInput.value = githubInput.value
-        .replace(/^https:\/\/github\.com\//, '')
-        .replace('/blob/', '/');
+      githubInput.value = githubInput.value.replace(/^https:\/\/github\.com\//, '');
     });
 
     function playSound() {
@@ -163,12 +160,12 @@
       let input = githubInput.value.trim();
       if (!input) return showAlert('Link tidak boleh kosong');
 
-      // Bersihkan jika masih ada /blob/
+      // Bersihkan link: hapus domain awal & ganti /blob/ jadi /
       input = input.replace(/^https:\/\/github\.com\//, '').replace('/blob/', '/');
 
       const rawLink = 'https://raw.githubusercontent.com/' + input;
       document.getElementById('resultBox').innerText = rawLink;
-      showAlert('Berhasil melakukan Raw');
+      showAlert('Berhasil membuat Raw Link');
     }
 
     function copyRaw() {
@@ -176,7 +173,7 @@
       const text = document.getElementById('resultBox').innerText;
       navigator.clipboard.writeText(text)
         .then(() => {
-          showAlert('Berhasil salin link Raw');
+          showAlert('Link Raw disalin');
         });
     }
 
@@ -209,7 +206,6 @@
         setTimeout(typeEffect, isDeleting ? 40 : 70);
       }
 
-      // Ganti teks utama hanya sekali saat selesai putaran
       if (i === 2 && !isDeleting && j === typingTexts[2].length) {
         mainTitle.innerText = typingTexts[2];
       }
