@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Raw GitHub - Alpin Developer</title>
+  <link rel="icon" href="https://avatars.githubusercontent.com/u/9919?s=200&v=4" type="image/png"/>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom right, #ffffff, #e0f7ff);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .typewriter {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 15px;
+      height: 24px;
+    }
+
+    .board {
+      width: 90%;
+      max-width: 600px;
+      margin: 10px;
+      padding: 20px;
+      border-radius: 20px;
+      background: #ffffff;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      background-color: #4db8ff;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #3399ff;
+    }
+
+    .alert {
+      position: fixed;
+      top: 20px;
+      right: -100%;
+      background-color: #00c853;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px 0 0 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      animation: slideIn 0.5s ease forwards;
+    }
+
+    @keyframes slideIn {
+      0% { right: -100%; }
+      50% { right: 20px; }
+      100% { right: -100%; }
+    }
+
+    .raw-result {
+      margin-top: 10px;
+      padding: 10px;
+      word-break: break-word;
+      font-weight: bold;
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    footer {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #444;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .verified-icon {
+      width: 18px;
+      height: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Efek Mengetik -->
+  <div class="typewriter" id="typewriterText"></div>
+
+  <!-- Papan RAW -->
+  <div class="board" id="raw-board">
+    <h2 id="mainTitle">Raw GitHub Link</h2>
+    <input type="text" id="githubLink" placeholder="username/repo/filename.js">
+    <button onclick="generateRaw()">Raw</button>
+  </div>
+
+  <!-- Papan COPY -->
+  <div class="board" id="copy-board">
+    <h2>Copy Raw Link</h2>
+    <div class="raw-result" id="resultBox">Link Raw akan muncul di sini...</div>
+    <button onclick="copyRaw()">Copy</button>
+  </div>
+
+  <!-- Suara -->
+  <audio id="bubbleSound" src="https://www.myinstants.com/media/sounds/bubble-pop.mp3"></audio>
+
+  <!-- Alert Box -->
+  <div id="alertBox" class="alert" style="display: none;"></div>
+
+  <!-- Footer -->
+  <footer>
+    <span>Alpin Developer</span>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e4/Twitter_Verified_Badge.svg" alt="Verified" class="verified-icon">
+  </footer>
+
+  <script>
+    const githubInput = document.getElementById('githubLink');
+    githubInput.addEventListener('input', () => {
+      githubInput.value = githubInput.value.replace(/^https:\/\/github\.com\//, '');
+    });
+
+    function playSound() {
+      document.getElementById('bubbleSound').play();
+    }
+
+    function showAlert(message) {
+      const alertBox = document.getElementById('alertBox');
+      alertBox.innerText = message;
+      alertBox.style.display = 'block';
+      alertBox.style.animation = 'none';
+      alertBox.offsetHeight;
+      alertBox.style.animation = 'slideIn 2s ease forwards';
+      setTimeout(() => {
+        alertBox.style.display = 'none';
+      }, 2000);
+    }
+
+    function generateRaw() {
+      playSound();
+      const input = githubInput.value.trim();
+      if (!input) return showAlert('Link tidak boleh kosong');
+      const rawLink = 'https://raw.githubusercontent.com/' + input;
+      document.getElementById('resultBox').innerText = rawLink;
+      showAlert('Berhasil melakukan Raw');
+    }
+
+    function copyRaw() {
+      playSound();
+      const text = document.getElementById('resultBox').innerText;
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          showAlert('Berhasil salin link Raw');
+        });
+    }
+
+    // Efek Mengetik
+    const typingTexts = [
+      "Selamat datang di website ini, selamat menggunakan...",
+      "Salam hangat dari Alpin Developer...",
+      "Raw Github Link"
+    ];
+    let i = 0, j = 0, currentText = '', isDeleting = false;
+    const typewriter = document.getElementById('typewriterText');
+    const mainTitle = document.getElementById('mainTitle');
+
+    function typeEffect() {
+      currentText = typingTexts[i];
+      if (isDeleting) {
+        typewriter.innerHTML = currentText.substring(0, j--);
+      } else {
+        typewriter.innerHTML = currentText.substring(0, j++);
+      }
+
+      if (!isDeleting && j === currentText.length + 1) {
+        isDeleting = true;
+        setTimeout(typeEffect, 1500);
+      } else if (isDeleting && j === 0) {
+        isDeleting = false;
+        i = (i + 1) % typingTexts.length;
+        setTimeout(typeEffect, 500);
+      } else {
+        setTimeout(typeEffect, isDeleting ? 40 : 70);
+      }
+
+      // Ganti teks utama hanya sekali saat selesai putaran
+      if (i === 2 && !isDeleting && j === typingTexts[2].length) {
+        mainTitle.innerText = typingTexts[2];
+      }
+    }
+
+    window.onload = typeEffect;
+  </script>
+</body>
+</html>
