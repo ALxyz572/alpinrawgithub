@@ -166,7 +166,10 @@
       // Hapus '/blob/' jika ada
       input = input.replace('/blob/', '/');
 
-      const rawLink = 'https://raw.githubusercontent.com/' + input;
+      // Tambahkan /main setelah username/repo
+      const rawLink = 'https://raw.githubusercontent.com/' +
+        input.replace(/^([^\/]+\/[^\/]+)/, '$1/main');
+
       document.getElementById('resultBox').innerText = rawLink;
       showAlert('Berhasil melakukan Raw');
     }
