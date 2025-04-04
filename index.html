@@ -110,7 +110,7 @@
   <!-- Papan RAW -->
   <div class="board" id="raw-board">
     <h2 id="mainTitle">Raw GitHub Link</h2>
-    <input type="text" id="githubLink" placeholder="username/repo/filename.js">
+    <input type="text" id="githubLink" placeholder="username/repo/filename.js atau link lengkap">
     <button onclick="generateRaw()">Raw</button>
   </div>
 
@@ -157,8 +157,15 @@
 
     function generateRaw() {
       playSound();
-      const input = githubInput.value.trim();
+      let input = githubInput.value.trim();
       if (!input) return showAlert('Link tidak boleh kosong');
+
+      // Hapus domain jika ada
+      input = input.replace(/^https:\/\/github\.com\//, '');
+
+      // Hapus '/blob/' jika ada
+      input = input.replace('/blob/', '/');
+
       const rawLink = 'https://raw.githubusercontent.com/' + input;
       document.getElementById('resultBox').innerText = rawLink;
       showAlert('Berhasil melakukan Raw');
