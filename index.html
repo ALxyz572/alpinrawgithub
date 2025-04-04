@@ -15,7 +15,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      min-height: 100vh;
     }
 
     .typewriter {
@@ -88,12 +88,13 @@
     }
 
     footer {
-      margin-top: 20px;
+      margin: 20px 0;
       font-size: 14px;
       color: #444;
       display: flex;
       align-items: center;
       gap: 8px;
+      flex-direction: column;
     }
 
     .verified-icon {
@@ -119,6 +120,23 @@
     #pasteBtn:hover {
       background: #0097a7;
     }
+
+    .developer-info {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .social-links a {
+      display: inline-block;
+      margin: 4px 8px;
+      text-decoration: none;
+      color: #0077cc;
+    }
+
+    .social-links a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -143,6 +161,16 @@
 
   <button id="pasteBtn" onclick="pasteClipboard()">Tempel</button>
 
+  <div class="developer-info">
+    <h2>Tentang Developer</h2>
+    <div class="social-links">
+      <a href="mailto:ajaalpiann@gmail.com">Email</a> |
+      <a href="https://wa.me/6283120589335" target="_blank">WhatsApp</a> |
+      <a href="https://t.me/alpinxyz" target="_blank">Telegram</a> |
+      <a href="https://instagram.com/alpian1_" target="_blank">Instagram</a>
+    </div>
+  </div>
+
   <footer>
     <span>Alpin Developer</span>
     <img src="https://upload.wikimedia.org/wikipedia/commons/e/e4/Twitter_Verified_Badge.svg" alt="Verified" class="verified-icon">
@@ -150,9 +178,6 @@
 
   <script>
     const githubInput = document.getElementById('githubLink');
-    githubInput.addEventListener('input', () => {
-      githubInput.value = githubInput.value.replace(/^https:\/\/github\.com\//, '');
-    });
 
     function playSound() {
       document.getElementById('bubbleSound').play();
@@ -172,14 +197,22 @@
 
     function generateRaw() {
       playSound();
-      let input = githubInput.value.trim();
+      const input = githubInput.value.trim();
       if (!input) return showAlert('Link tidak boleh kosong');
 
-      // Bersihkan /blob/ & https://github.com/ HANYA untuk output
-      input = input.replace('https://github.com/', '').replace('/blob/', '/');
-      const rawLink = 'https://raw.githubusercontent.com/' + input;
+      // Validasi dan ekstraksi username, repo, dan path dari link GitHub
+      const pattern = /^https:\/\/github\.com\/([^\/]+)\/([^\/]+)\/blob\/(.+)$/;
+      const match = input.match(pattern);
+
+      if (!match) return showAlert('Format link GitHub tidak valid');
+
+      const username = match[1];
+      const repo = match[2];
+      const path = match[3];
+
+      const rawLink = `https://raw.githubusercontent.com/${username}/${repo}/${path}`;
       document.getElementById('resultBox').innerText = rawLink;
-      showAlert('Berhasil melakukan Raw');
+      showAlert('Berhasil membuat link Raw');
     }
 
     function copyRaw() {
@@ -195,7 +228,7 @@
     async function pasteClipboard() {
       try {
         const text = await navigator.clipboard.readText();
-        githubInput.value = text.replace('https://github.com/', '');
+        githubInput.value = text;
         generateRaw();
       } catch (err) {
         showAlert('Gagal menempel clipboard');
@@ -204,7 +237,6 @@
 
     window.onload = () => {
       typeEffect();
-      // Tampilkan tombol tempel jika clipboard punya link
       navigator.clipboard.readText().then(text => {
         if (text.includes("github.com")) {
           document.getElementById('pasteBtn').style.display = 'block';
