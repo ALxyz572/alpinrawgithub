@@ -156,6 +156,16 @@
 
   <div class="typewriter" id="typewriterText"></div>
   
+  <script>
+    for (let i = 0; i < 30; i++) {
+      const box = document.createElement('div');
+      box.classList.add('floating-box');
+      box.style.left = `${Math.random() * 100}%`;
+      box.style.animationDuration = `${8 + Math.random() * 5}s`;
+      document.body.appendChild(box);
+    }
+  </script>
+  
   <h1>RAW GITHUB LINK</h1>
   <div class="graffiti-text">Alpin Developer</div>
   
